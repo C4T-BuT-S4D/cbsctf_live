@@ -8,7 +8,11 @@
 </template>
 
 <script>
+import { vueTelegramLogin } from 'vue-telegram-login'
+
 export default {
+    components: { vueTelegramLogin },
+
     methods: {
         telegramAuth: async function(data) {
             console.log(data);
