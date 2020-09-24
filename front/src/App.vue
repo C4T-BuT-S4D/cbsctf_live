@@ -17,8 +17,12 @@ export default {
     components: { vueTelegramLogin },
 
     methods: {
-        telegramAuth(data) {
+        telegramAuth: async function (user) {
             console.log("Called the callback");
+            console.log(user);
+
+            const { data } = await this.$http.post("/registrations/");
+            console.log("Got server response");
             console.log(data);
         },
     },
