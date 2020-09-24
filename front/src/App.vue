@@ -12,6 +12,7 @@
 
 <script>
 import { vueTelegramLogin } from "vue-telegram-login";
+import { mapActions } from "vuex";
 
 export default {
     components: { vueTelegramLogin },
@@ -24,7 +25,11 @@ export default {
             const { data } = await this.$http.post("/telegram/callback/", user);
             console.log("Got server response");
             console.log(data);
+
+            const { token } = data;
+            this.setAccessToken(token);
         },
+        ...mapActions(["setAccessToken"]),
     },
 };
 </script>
