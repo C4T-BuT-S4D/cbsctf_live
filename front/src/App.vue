@@ -21,7 +21,7 @@ export default {
             console.log("Called the callback");
             console.log(user);
 
-            const { data } = await this.$http.post("/register/", user);
+            const { data } = await this.$http.post("/telegram/callback/", user);
             console.log("Got server response");
             console.log(data);
         },
