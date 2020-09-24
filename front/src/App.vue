@@ -13,15 +13,17 @@
             Unregister
         </button>
         <div>
+            <p>Registration form</p>
             <input type="text" placeholder="Team Name" v-model="teamName" />
-            <input
-                type="password"
-                placeholder="Team Password"
-                v-model="password"
-            />
             <button class="register" type="button" @click="register">
                 Register
             </button>
+        </div>
+
+        <div>
+            <p>Join by token form</p>
+            <input type="text" placeholder="Join token" v-model="joinToken" />
+            <button class="join" type="button" @click="joinTeam">Join</button>
         </div>
     </div>
 </template>
@@ -35,7 +37,7 @@ export default {
     data: function () {
         return {
             teamName: "",
-            password: "",
+            joinToken: "",
         };
     },
     methods: {
@@ -55,12 +57,18 @@ export default {
             await this.$http.post("/registrations/", {
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 team_name: this.teamName,
-                password: this.password,
             });
             this.updateRegistration();
         },
         unregister: async function () {
             await this.$http.delete("/registrations/");
+            this.updateRegistration();
+        },
+        joinTeam: async function () {
+            await this.$http.post("/registrations/join/", {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                join_token: this.joinToken,
+            });
             this.updateRegistration();
         },
         ...mapActions(["setAccessToken", "updateRegistration"]),
