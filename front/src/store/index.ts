@@ -7,14 +7,14 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         accessToken: "",
-        user: null,
+        registration: null,
     },
     mutations: {
         setAccessToken(state, accessToken) {
             state.accessToken = accessToken;
         },
-        setUser(state, user) {
-            state.user = user;
+        setRegistration(state, registration) {
+            state.registration = registration;
         },
     },
     actions: {
@@ -22,18 +22,18 @@ export default new Vuex.Store({
             context.commit("setAccessToken", accessToken);
             await context.dispatch("fetchUser");
         },
-        fetchUser: async function (context) {
+        fetchRegistration: async function (context) {
             const { data } = await axios.get("/registrations/");
-            console.log("User data:", data);
-            context.commit("setUser", data);
+            console.log("User registration:", data);
+            context.commit("setRegistration", data);
         },
     },
     getters: {
         getAccessToken(state) {
             return state.accessToken;
         },
-        getUser(state) {
-            return state.user;
+        getRegistration(state) {
+            return state.registration;
         },
     },
     modules: {},
