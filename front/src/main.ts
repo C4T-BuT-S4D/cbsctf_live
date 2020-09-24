@@ -10,7 +10,7 @@ Vue.config.productionTip = false;
 
 axios.defaults.baseURL = regApiURL;
 axios.defaults.headers.common["Authorization"] =
-    "Token " + store.getters.getUser();
+    "Token " + store.getters.getAccessToken;
 
 Vue.prototype.$http = axios;
 

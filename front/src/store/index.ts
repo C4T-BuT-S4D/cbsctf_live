@@ -29,6 +29,9 @@ export default new Vuex.Store({
         },
     },
     getters: {
+        getAccessToken(state) {
+            return state.accessToken;
+        },
         getUser(state) {
             return state.user;
         },
