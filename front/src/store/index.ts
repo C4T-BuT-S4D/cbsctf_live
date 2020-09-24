@@ -22,7 +22,7 @@ export default new Vuex.Store({
             context.commit("setAccessToken", accessToken);
             await context.dispatch("fetchUser");
         },
-        fetchRegistration: async function (context) {
+        updateRegistration: async function (context) {
             const { data } = await axios.get("/registrations/");
             console.log("User registration:", data);
             context.commit("setRegistration", data);

@@ -8,7 +8,7 @@
             @callback="telegramAuth"
         />
         <div>My registration:</div>
-        <div>{{ user }}</div>
+        <div>{{ registration }}</div>
         <button class="unregister" type="button" @click="unregister">
             Unregister
         </button>
@@ -49,6 +49,7 @@ export default {
 
             const { token } = data;
             this.setAccessToken(token);
+            this.updateRegistration();
         },
         register: async function () {
             await this.$http.post("/registrations/", {
@@ -56,14 +57,16 @@ export default {
                 team_name: this.teamName,
                 password: this.password,
             });
+            this.updateRegistration();
         },
         unregister: async function () {
             await this.$http.delete("/registrations/");
+            this.updateRegistration();
         },
-        ...mapActions(["setAccessToken"]),
+        ...mapActions(["setAccessToken", "updateRegistration"]),
     },
     computed: {
-        ...mapGetters({ user: "getUser" }),
+        ...mapGetters({ registration: "getRegistration" }),
     },
 };
 </script>
