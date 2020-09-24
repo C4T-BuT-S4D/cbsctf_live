@@ -9,10 +9,9 @@ import { regApiURL } from "@/config";
 Vue.config.productionTip = false;
 
 axios.defaults.baseURL = regApiURL;
-
 axios.interceptors.request.use(function (config) {
     const token = store.getters.getAccessToken;
-    config.headers.Authorization = token;
+    config.headers.Authorization = "Token " + token;
 
     return config;
 });
