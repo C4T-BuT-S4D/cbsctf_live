@@ -9,6 +9,8 @@ import { regApiURL } from "@/config";
 Vue.config.productionTip = false;
 
 axios.defaults.baseURL = regApiURL;
+axios.defaults.headers.common["Authorization"] =
+    "Token " + store.getters.getUser();
 
 Vue.prototype.$http = axios;
 
