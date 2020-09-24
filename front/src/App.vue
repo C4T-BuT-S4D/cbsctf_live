@@ -7,12 +7,14 @@
             requestAccess="write"
             @callback="telegramAuth"
         />
+        <div>My registration:</div>
+        <div>{{ user }}</div>
     </div>
 </template>
 
 <script>
 import { vueTelegramLogin } from "vue-telegram-login";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
     components: { vueTelegramLogin },
@@ -30,6 +32,9 @@ export default {
             this.setAccessToken(token);
         },
         ...mapActions(["setAccessToken"]),
+    },
+    computed: {
+        ...mapGetters({ user: "getUser" }),
     },
 };
 </script>
