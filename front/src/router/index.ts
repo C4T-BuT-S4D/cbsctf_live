@@ -1,5 +1,5 @@
-import Vue from "vue";
-import VueRouter, { RouteConfig } from "vue-router";
+import Vue from 'vue';
+import VueRouter, { RouteConfig } from 'vue-router';
 
 import Index from '@/pages/Index.vue';
 import Telegram from '@/pages/Telegram.vue';
@@ -8,22 +8,22 @@ Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
     {
-        path: "/",
-        name: "Index",
-        component: Index
+        path: '/',
+        name: 'Index',
+        component: Index,
     },
 
     {
-        path: "/telegram",
-        name: "Telegram",
-        component: Telegram
+        path: '/tg',
+        name: 'Telegram',
+        component: Telegram,
     },
 ];
 
 const router = new VueRouter({
-    mode: "history",
+    mode: 'history',
     base: process.env.BASE_URL,
-    routes
+    routes,
 });
 
 export default router;

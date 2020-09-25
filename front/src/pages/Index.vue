@@ -66,7 +66,7 @@ export default {
     },
 
     created: async function () {
-        this.url = (window.location.pathname + '/telegram').replaceAll('//', '/');
+        this.url = (window.location.pathname + '/tg').replaceAll('//', '/');
     },
 
     mounted: async function () {
