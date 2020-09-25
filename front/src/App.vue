@@ -67,7 +67,7 @@ export default {
     },
     mounted: async function () {
         await this.updateStatus();
-        this.gameStatus = this.state.status.toString();
+        this.gameStatus = this.status.status.toString();
     },
     methods: {
         telegramAuth: async function (user) {
