@@ -83,7 +83,7 @@ export default {
             console.log(data);
 
             const { token } = data;
-            await this.setAccessToken(token);
+            localStorage["access_token"] = token;
             await this.refreshAll();
         },
 
@@ -119,7 +119,7 @@ export default {
             this.gameStatus = this.status.status.toString();
         },
 
-        ...mapActions(["setAccessToken", "updateRegistration", "updateStatus"]),
+        ...mapActions(["updateRegistration", "updateStatus"]),
     },
     computed: {
         ...mapGetters({ registration: "getRegistration", status: "getStatus" }),

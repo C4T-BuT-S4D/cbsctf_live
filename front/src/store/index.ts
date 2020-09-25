@@ -11,10 +11,6 @@ export default new Vuex.Store({
     },
 
     mutations: {
-        setAccessToken(state, accessToken) {
-            localStorage["access_token"] = accessToken;
-        },
-
         setRegistration(state, registration) {
             state.registration = registration;
         },
@@ -25,10 +21,6 @@ export default new Vuex.Store({
     },
 
     actions: {
-        setAccessToken: async function (context, accessToken) {
-            context.commit("setAccessToken", accessToken);
-        },
-
         updateRegistration: async function (context) {
             try {
                 const { data } = await axios.get("/registrations/");
@@ -45,10 +37,6 @@ export default new Vuex.Store({
         },
     },
     getters: {
-        getAccessToken(state) {
-            return localStorage["accessToken"] || "";
-        },
-
         getRegistration(state) {
             return state.registration;
         },

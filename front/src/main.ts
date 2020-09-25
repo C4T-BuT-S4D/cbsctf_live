@@ -10,7 +10,7 @@ Vue.config.productionTip = false;
 
 axios.defaults.baseURL = regApiURL;
 axios.interceptors.request.use(function (config) {
-    const token = store.getters.getAccessToken;
+    const token = localStorage["access_token"];
     config.headers.Authorization = "Token " + token;
 
     return config;
