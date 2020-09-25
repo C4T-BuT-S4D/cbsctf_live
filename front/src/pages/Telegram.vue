@@ -5,7 +5,7 @@
 <script>
 export default {
     created: async function () {
-        console.log('Called created');
+        console.log('Called created!');
         console.log(this.$route.query);
 
         // const { data } = await this.$http.post('/telegram/callback/', user);
