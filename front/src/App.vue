@@ -48,6 +48,9 @@
                 <option value="4">Game started</option>
                 <option value="5">Game finished</option>
             </select>
+            <button class="set-game-state" type="button" @click="setGameState">
+                Set game state
+            </button>
         </div>
     </div>
 </template>
@@ -66,8 +69,7 @@ export default {
         };
     },
     mounted: async function () {
-        await this.updateStatus();
-        this.gameStatus = this.status.status.toString();
+        await this.refreshAll();
     },
     methods: {
         telegramAuth: async function (user) {
@@ -79,26 +81,36 @@ export default {
             console.log(data);
 
             const { token } = data;
-            this.setAccessToken(token);
-            this.updateRegistration();
+            await this.setAccessToken(token);
+            await this.refreshAll();
         },
         register: async function () {
             await this.$http.post("/registrations/", {
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 team_name: this.teamName,
             });
-            this.updateRegistration();
+            await this.refreshAll();
         },
         unregister: async function () {
             await this.$http.delete("/registrations/");
-            this.updateRegistration();
+            await this.refreshAll();
         },
         joinTeam: async function () {
             await this.$http.post("/registrations/join/", {
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 join_token: this.joinToken,
             });
-            this.updateRegistration();
+            await this.refreshAll();
+        },
+        refreshAll: async function () {
+            await this.updateRegistration();
+            await this.updateStatus();
+            this.gameStatus = this.status.status.toString();
+        },
+        setGameState: async function () {
+            await this.$http.post("/admin/state/", {
+                status: +this.gameStatus,
+            });
         },
         ...mapActions(["setAccessToken", "updateRegistration", "updateStatus"]),
     },
