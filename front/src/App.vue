@@ -68,9 +68,11 @@ export default {
             gameStatus: "",
         };
     },
+
     mounted: async function () {
         await this.refreshAll();
     },
+
     methods: {
         telegramAuth: async function (user) {
             console.log("Called the callback");
@@ -84,35 +86,39 @@ export default {
             await this.setAccessToken(token);
             await this.refreshAll();
         },
+
         register: async function () {
             await this.$http.post("/registrations/", {
-                // eslint-disable-next-line @typescript-eslint/camelcase
                 team_name: this.teamName,
             });
             await this.refreshAll();
         },
+
         unregister: async function () {
             await this.$http.delete("/registrations/");
             await this.refreshAll();
         },
+
         joinTeam: async function () {
             await this.$http.post("/registrations/join/", {
-                // eslint-disable-next-line @typescript-eslint/camelcase
                 join_token: this.joinToken,
             });
             await this.refreshAll();
         },
+
         setGameState: async function () {
             await this.$http.post("/admin/state/", {
                 status: +this.gameStatus,
             });
             await this.refreshAll();
         },
+
         refreshAll: async function () {
             await this.updateRegistration();
             await this.updateStatus();
             this.gameStatus = this.status.status.toString();
         },
+
         ...mapActions(["setAccessToken", "updateRegistration", "updateStatus"]),
     },
     computed: {
