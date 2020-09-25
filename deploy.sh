@@ -12,6 +12,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 cd "$DIR/front"
 yarn build
+cp "$DIR/front/dist/index.html" "$DIR/front/dist/404.html"
 
 cd "$DIR"
 git add front
