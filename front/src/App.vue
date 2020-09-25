@@ -102,15 +102,16 @@ export default {
             });
             await this.refreshAll();
         },
-        refreshAll: async function () {
-            await this.updateRegistration();
-            await this.updateStatus();
-            this.gameStatus = this.status.status.toString();
-        },
         setGameState: async function () {
             await this.$http.post("/admin/state/", {
                 status: +this.gameStatus,
             });
+            await this.refreshAll();
+        },
+        refreshAll: async function () {
+            await this.updateRegistration();
+            await this.updateStatus();
+            this.gameStatus = this.status.status.toString();
         },
         ...mapActions(["setAccessToken", "updateRegistration", "updateStatus"]),
     },
