@@ -7,11 +7,18 @@
             requestAccess="write"
             @callback="telegramAuth"
         />
-        <div>My registration:</div>
-        <div>{{ registration }}</div>
-        <button class="unregister" type="button" @click="unregister">
-            Unregister
-        </button>
+
+        <div>
+            <p>My registration:</p>
+            <p>{{ registration }}</p>
+        </div>
+
+        <div>
+            <button class="unregister" type="button" @click="unregister">
+                Unregister
+            </button>
+        </div>
+
         <div>
             <p>Registration form</p>
             <input type="text" placeholder="Team Name" v-model="teamName" />
@@ -24,6 +31,23 @@
             <p>Join by token form</p>
             <input type="text" placeholder="Join token" v-model="joinToken" />
             <button class="join" type="button" @click="joinTeam">Join</button>
+        </div>
+
+        <div>
+            <p>User status</p>
+            <p>{{ status }}</p>
+        </div>
+
+        <div>
+            <p>Game state form (if user role is admin)</p>
+            <label>Select status</label>
+            <select id="state-select" v-model="gameStatus">
+                <option value="0">Not started</option>
+                <option value="1">Registration open</option>
+                <option value="2">Registration closed</option>
+                <option value="4">Game started</option>
+                <option value="5">Game finished</option>
+            </select>
         </div>
     </div>
 </template>
@@ -38,7 +62,12 @@ export default {
         return {
             teamName: "",
             joinToken: "",
+            gameStatus: "",
         };
+    },
+    mounted: async function () {
+        await this.updateStatus();
+        this.gameStatus = this.state.status.toString();
     },
     methods: {
         telegramAuth: async function (user) {
@@ -71,10 +100,10 @@ export default {
             });
             this.updateRegistration();
         },
-        ...mapActions(["setAccessToken", "updateRegistration"]),
+        ...mapActions(["setAccessToken", "updateRegistration", "updateStatus"]),
     },
     computed: {
-        ...mapGetters({ registration: "getRegistration" }),
+        ...mapGetters({ registration: "getRegistration", status: "getStatus" }),
     },
 };
 </script>

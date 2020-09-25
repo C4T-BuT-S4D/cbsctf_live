@@ -8,6 +8,7 @@ export default new Vuex.Store({
     state: {
         accessToken: "",
         registration: null,
+        status: null,
     },
     mutations: {
         setAccessToken(state, accessToken) {
@@ -15,6 +16,9 @@ export default new Vuex.Store({
         },
         setRegistration(state, registration) {
             state.registration = registration;
+        },
+        setStatus(state, status) {
+            state.status = status;
         },
     },
     actions: {
@@ -27,6 +31,11 @@ export default new Vuex.Store({
             console.log("User registration:", data);
             context.commit("setRegistration", data);
         },
+        updateStatus: async function (context) {
+            const { data } = await axios.get("/status/");
+            console.log("Status response:", data);
+            context.commit("setStatus", status);
+        },
     },
     getters: {
         getAccessToken(state) {
@@ -34,6 +43,9 @@ export default new Vuex.Store({
         },
         getRegistration(state) {
             return state.registration;
+        },
+        getStatus(state) {
+            return state.status;
         },
     },
     modules: {},
