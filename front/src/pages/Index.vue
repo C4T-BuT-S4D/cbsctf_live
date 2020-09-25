@@ -66,7 +66,7 @@ export default {
     },
 
     created: async function () {
-        this.url = window.location.origin + '/telegram';
+        this.url = window.location.origin + window.location.pathname + '/telegram';
     },
 
     mounted: async function () {
