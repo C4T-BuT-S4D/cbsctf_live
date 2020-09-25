@@ -1,7 +1,8 @@
 <template>
     <div id="app">
         <vue-telegram-login
-            mode="callback"
+            mode="redirect"
+            :redirect-url="url"
             telegram-login="cbsctf_regbot"
             :userpic="true"
             requestAccess="write"
@@ -14,17 +15,13 @@
         </div>
 
         <div>
-            <button class="unregister" type="button" @click="unregister">
-                Unregister
-            </button>
+            <button class="unregister" type="button" @click="unregister">Unregister</button>
         </div>
 
         <div>
             <p>Registration form</p>
             <input type="text" placeholder="Team Name" v-model="teamName" />
-            <button class="register" type="button" @click="register">
-                Register
-            </button>
+            <button class="register" type="button" @click="register">Register</button>
         </div>
 
         <div>
@@ -48,25 +45,28 @@
                 <option value="4">Game started</option>
                 <option value="5">Game finished</option>
             </select>
-            <button class="set-game-state" type="button" @click="setGameState">
-                Set game state
-            </button>
+            <button class="set-game-state" type="button" @click="setGameState">Set game state</button>
         </div>
     </div>
 </template>
 
 <script>
-import { vueTelegramLogin } from "vue-telegram-login";
-import { mapActions, mapGetters } from "vuex";
+import { vueTelegramLogin } from 'vue-telegram-login';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
     components: { vueTelegramLogin },
     data: function () {
         return {
-            teamName: "",
-            joinToken: "",
-            gameStatus: "",
+            teamName: '',
+            joinToken: '',
+            gameStatus: '',
+            url: '',
         };
+    },
+
+    created: async function () {
+        this.url = window.location.origin + '/telegram';
     },
 
     mounted: async function () {
@@ -75,39 +75,39 @@ export default {
 
     methods: {
         telegramAuth: async function (user) {
-            console.log("Called the callback");
+            console.log('Called the callback');
             console.log(user);
 
-            const { data } = await this.$http.post("/telegram/callback/", user);
-            console.log("Got server response");
+            const { data } = await this.$http.post('/telegram/callback/', user);
+            console.log('Got server response');
             console.log(data);
 
             const { token } = data;
-            localStorage["access_token"] = token;
+            localStorage['access_token'] = token;
             await this.refreshAll();
         },
 
         register: async function () {
-            await this.$http.post("/registrations/", {
+            await this.$http.post('/registrations/', {
                 team_name: this.teamName,
             });
             await this.refreshAll();
         },
 
         unregister: async function () {
-            await this.$http.delete("/registrations/");
+            await this.$http.delete('/registrations/');
             await this.refreshAll();
         },
 
         joinTeam: async function () {
-            await this.$http.post("/registrations/join/", {
+            await this.$http.post('/registrations/join/', {
                 join_token: this.joinToken,
             });
             await this.refreshAll();
         },
 
         setGameState: async function () {
-            await this.$http.post("/admin/state/", {
+            await this.$http.post('/admin/state/', {
                 status: +this.gameStatus,
             });
             await this.refreshAll();
@@ -119,10 +119,10 @@ export default {
             this.gameStatus = this.status.status.toString();
         },
 
-        ...mapActions(["updateRegistration", "updateStatus"]),
+        ...mapActions(['updateRegistration', 'updateStatus']),
     },
     computed: {
-        ...mapGetters({ registration: "getRegistration", status: "getStatus" }),
+        ...mapGetters({ registration: 'getRegistration', status: 'getStatus' }),
     },
 };
 </script>
