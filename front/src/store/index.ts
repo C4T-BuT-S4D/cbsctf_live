@@ -27,9 +27,14 @@ export default new Vuex.Store({
             await context.dispatch("fetchUser");
         },
         updateRegistration: async function (context) {
-            const { data } = await axios.get("/registrations/");
-            console.log("User registration:", data);
-            context.commit("setRegistration", data);
+            try {
+                const { data } = await axios.get("/registrations/");
+                console.log("User registration:", data);
+                context.commit("setRegistration", data);
+            } catch (e) {
+                console.log("Error getting registrations:", e);
+                context.commit("setRegistration", null);
+            }
         },
         updateStatus: async function (context) {
             const { data } = await axios.get("/status/");
