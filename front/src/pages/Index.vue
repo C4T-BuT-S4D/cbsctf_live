@@ -6,7 +6,6 @@
             telegram-login="cbsctf_regbot"
             :userpic="true"
             requestAccess="write"
-            @callback="telegramAuth"
         />
 
         <div>
@@ -74,19 +73,6 @@ export default {
     },
 
     methods: {
-        telegramAuth: async function (user) {
-            console.log('Called the callback');
-            console.log(user);
-
-            const { data } = await this.$http.post('/telegram/callback/', user);
-            console.log('Got server response');
-            console.log(data);
-
-            const { token } = data;
-            localStorage['access_token'] = token;
-            await this.refreshAll();
-        },
-
         register: async function () {
             await this.$http.post('/registrations/', {
                 team_name: this.teamName,

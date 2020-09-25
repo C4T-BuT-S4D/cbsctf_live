@@ -9,13 +9,13 @@ Vue.use(VueRouter);
 const routes: Array<RouteConfig> = [
     {
         path: '/',
-        name: 'Index',
+        name: 'index',
         component: Index,
     },
 
     {
         path: '/tg',
-        name: 'Telegram',
+        name: 'telegram',
         component: Telegram,
     },
 ];

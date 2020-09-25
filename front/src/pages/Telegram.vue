@@ -8,6 +8,15 @@ export default {
         console.log('Called created!');
         console.log(this.$route.query);
 
+        const { data } = await this.$http.post('/telegram/callback/', this.$route.query);
+        console.log('Got server response');
+        console.log(data);
+
+        const { token } = data;
+        localStorage['access_token'] = token;
+
+        this.$router.push({ name: 'index' });
+
         // const { data } = await this.$http.post('/telegram/callback/', user);
         // console.log('Got server response');
         // console.log(data);
