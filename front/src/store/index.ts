@@ -34,7 +34,7 @@ export default new Vuex.Store({
         updateStatus: async function (context) {
             const { data } = await axios.get("/status/");
             console.log("Status response:", data);
-            context.commit("setStatus", status);
+            context.commit("setStatus", data);
         },
     },
     getters: {
