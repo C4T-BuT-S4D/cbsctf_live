@@ -127,6 +127,10 @@ input, textarea, select {
 </style>
 
 <style lang="scss" scoped>
+.terminal {
+    position: relative;
+}
+
 .command-list {
     max-height: 95vh;
     display: flex;
@@ -134,7 +138,11 @@ input, textarea, select {
 }
 
 .hide {
-    display: none;
+    visibility: hidden;
+    z-index: -100000000;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .output {
