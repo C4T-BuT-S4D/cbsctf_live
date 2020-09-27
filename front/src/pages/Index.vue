@@ -6,14 +6,15 @@
                 <form class="user-input-wrapper" v-if="command.isCommand === true">
                     <input v-model="history[index].command" type="text" class="user-input" disabled>
                 </form>
-                <vue-telegram-login
-                    v-else-if="command.isCommand === 'tg'"
-                    mode="redirect"
-                    :redirect-url="url"
-                    telegram-login="cbsctf_regbot"
-                    :userpic="true"
-                    requestAccess="write"
-                />
+                <div class="tg" v-else-if="command.isCommand === 'tg'">
+                    <vue-telegram-login
+                        mode="redirect"
+                        :redirect-url="url"
+                        telegram-login="cbsctf_regbot"
+                        :userpic="true"
+                        requestAccess="write"
+                    />
+                </div>
                 <pre class="output" v-else>{{ command.command }}</pre>
             </div>
         </div>
