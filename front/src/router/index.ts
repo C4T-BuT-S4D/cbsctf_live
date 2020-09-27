@@ -3,6 +3,7 @@ import VueRouter, { RouteConfig } from 'vue-router';
 
 import Index from '@/pages/Index.vue';
 import Telegram from '@/pages/Telegram.vue';
+import Terminal from '@/pages/Terminal.vue';
 
 Vue.use(VueRouter);
 
@@ -17,6 +18,12 @@ const routes: Array<RouteConfig> = [
         path: '/tg',
         name: 'telegram',
         component: Telegram,
+    },
+
+    {
+        path: '/term',
+        name: 'terminal',
+        component: Terminal,
     },
 ];
 
