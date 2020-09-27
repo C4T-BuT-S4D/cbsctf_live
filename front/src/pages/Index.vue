@@ -1,20 +1,19 @@
 <template>
     <div class="terminal">
-        <div class="hide">
-            <vue-telegram-login
-                mode="redirect"
-                :redirect-url="url"
-                telegram-login="cbsctf_regbot"
-                :userpic="true"
-                requestAccess="write"
-            />
-        </div>
         <div class="command-list">
             <div class="command" v-for="(command, index) of history" :key="index">
                 <span class="prompt" v-if="command.isCommand">{{ prompt }}</span>
-                <form class="user-input-wrapper" v-if="command.isCommand">
+                <form class="user-input-wrapper" v-if="command.isCommand === true">
                     <input v-model="history[index].command" type="text" class="user-input" disabled>
                 </form>
+                <vue-telegram-login
+                    v-else-if="command.isCommand === 'tg'"
+                    mode="redirect"
+                    :redirect-url="url"
+                    telegram-login="cbsctf_regbot"
+                    :userpic="true"
+                    requestAccess="write"
+                />
                 <pre class="output" v-else>{{ command.command }}</pre>
             </div>
         </div>
@@ -102,7 +101,11 @@ export default {
         },
 
         auth: function() {
-            window.TWidgetLogin.auth();
+            this.logCommand('auth');
+            this.history.unshift({
+                command: 'roflan',
+                isCommand: 'tg'
+            })
         }
     }
 }
@@ -135,14 +138,6 @@ input, textarea, select {
     max-height: 95vh;
     display: flex;
     flex-direction: column-reverse;
-}
-
-.hide {
-    visibility: hidden;
-    z-index: -100000000;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 .output {
