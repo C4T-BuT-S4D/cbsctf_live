@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div class="terminal">
         <vue-telegram-login
             mode="redirect"
             :redirect-url="url"
@@ -7,60 +7,37 @@
             :userpic="true"
             requestAccess="write"
         />
-
-        <div>
-            <p>My registration:</p>
-            <p>{{ registration }}</p>
+        <div class="command-list">
+            <div class="command" v-for="(command, index) of history" :key="index">
+                <span class="prompt" v-if="command.isCommand">{{ prompt }}</span>
+                <form class="user-input-wrapper" v-if="command.isCommand">
+                    <input v-model="history[index].command" type="text" class="user-input" disabled>
+                </form>
+                <pre class="output" v-else>{{ command.command }}</pre>
+            </div>
         </div>
-
-        <div>
-            <button class="unregister" type="button" @click="unregister">Unregister</button>
-        </div>
-
-        <div>
-            <p>Registration form</p>
-            <input type="text" placeholder="Team Name" v-model="teamName" />
-            <button class="register" type="button" @click="register">Register</button>
-        </div>
-
-        <div>
-            <p>Join by token form</p>
-            <input type="text" placeholder="Join token" v-model="joinToken" />
-            <button class="join" type="button" @click="joinTeam">Join</button>
-        </div>
-
-        <div>
-            <p>User status</p>
-            <p>{{ status }}</p>
-        </div>
-
-        <div>
-            <p>Game state form (if user role is admin)</p>
-            <label>Select status</label>
-            <select id="state-select" v-model="gameStatus">
-                <option value="0">Not started</option>
-                <option value="1">Registration open</option>
-                <option value="2">Registration closed</option>
-                <option value="4">Game started</option>
-                <option value="5">Game finished</option>
-            </select>
-            <button class="set-game-state" type="button" @click="setGameState">Set game state</button>
+        <div class="command-input">
+            <span class="prompt">{{ prompt }}</span>
+            <form @submit.prevent="enterCommand" class="user-input-wrapper">
+                <input v-model="command" type="text" class="user-input" ref="input" maxlength="41" placeholder="Type help to get help">
+            </form>
         </div>
     </div>
 </template>
 
 <script>
 import { vueTelegramLogin } from 'vue-telegram-login';
-import { mapActions, mapGetters } from 'vuex';
 
 export default {
     components: { vueTelegramLogin },
-    data: function () {
+
+    data: function() {
         return {
-            teamName: '',
-            joinToken: '',
-            gameStatus: '',
-            url: '',
+            history: [],
+            prompt: '❯',
+            command: '',
+            commands: ['help', 'auth', 'register', 'join', 'leave'],
+            url: ''
         };
     },
 
@@ -68,47 +45,131 @@ export default {
         this.url = (window.location.pathname + '/tg').replaceAll('//', '/');
     },
 
-    mounted: async function () {
-        await this.refreshAll();
+    mounted: function() {
+        this.$refs.input.addEventListener('keydown', this.keydown);
+    },
+
+    beforeDestroy: function() {
+        this.$refs.input.removeEventListener('keydown', this.keydown);
     },
 
     methods: {
-        register: async function () {
-            await this.$http.post('/registrations/', {
-                team_name: this.teamName,
+        keydown: function(e) {
+            if (e.key === "Tab") {
+                e.preventDefault();
+                this.autocomplete();
+            }
+        },
+
+        autocomplete: function() {
+            console.log('bruh');
+        },
+
+        logCommand: function(text) {
+            this.history.unshift({
+                command: text,
+                isCommand: true,
             });
-            await this.refreshAll();
         },
 
-        unregister: async function () {
-            await this.$http.delete('/registrations/');
-            await this.refreshAll();
-        },
-
-        joinTeam: async function () {
-            await this.$http.post('/registrations/join/', {
-                join_token: this.joinToken,
+        logOutput: function(text) {
+            this.history.unshift({
+                command: text,
+                isCommand: false,
             });
-            await this.refreshAll();
         },
 
-        setGameState: async function () {
-            await this.$http.post('/admin/state/', {
-                status: +this.gameStatus,
-            });
-            await this.refreshAll();
+        log: function(cmd, output) {
+            this.logCommand(cmd);
+            this.logOutput(output);
         },
 
-        refreshAll: async function () {
-            await this.updateRegistration();
-            await this.updateStatus();
-            this.gameStatus = this.status.status.toString();
+        enterCommand: function() {
+            const argv = this.command.split(' ');
+            const cmdName = argv[0];
+            if (!this.commands.includes(cmdName)) {
+                console.log(123);
+            } else {
+                this[cmdName](...argv.slice(1));
+                this.command = '';
+            }
         },
 
-        ...mapActions(['updateRegistration', 'updateStatus']),
-    },
-    computed: {
-        ...mapGetters({ registration: 'getRegistration', status: 'getStatus' }),
-    },
-};
+        help: function() {
+            this.log(this.command, 'Type auth to authenticate with telegram\nType register <team_name> to register team\nType join <token> to join team\nType leave to leave team');
+        }
+    }
+}
 </script>
+
+<style lang="scss">
+html,
+body {
+    width: 100%;
+    margin: 0;
+    overflow-y: hidden;
+    background-color:black;
+    font-family: 'PT Mono', monospace;
+    font-size: 1.05em;
+}
+
+input, textarea, select {
+    font-family:inherit;
+    font-size: inherit;
+    color: inherit;
+}
+</style>
+
+<style lang="scss" scoped>
+.command-list {
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.output {
+    margin-left: 1em;
+}
+
+.command {
+    flex: 0 0 5vh;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+
+.command-input {
+    height: 5vh;
+
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+
+.prompt {
+    color: greenyellow;
+    margin-left: 1em;
+    margin-right: 0.4em;
+}
+
+.user-input-wrapper {
+    flex: 1 0 0;
+}
+
+.user-input {
+    color: greenyellow;
+    background-color: black;
+    outline: none;
+    border: none;
+    padding-top: 0.3em;
+    width: calc(100% - 1em);
+}
+
+.output {
+    color: white;
+}
+
+.command {
+    color: greenyellow;
+}
+</style>
