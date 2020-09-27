@@ -1,12 +1,14 @@
 <template>
     <div class="terminal">
-        <vue-telegram-login
-            mode="redirect"
-            :redirect-url="url"
-            telegram-login="cbsctf_regbot"
-            :userpic="true"
-            requestAccess="write"
-        />
+        <div class="hide">
+            <vue-telegram-login
+                mode="redirect"
+                :redirect-url="url"
+                telegram-login="cbsctf_regbot"
+                :userpic="true"
+                requestAccess="write"
+            />
+        </div>
         <div class="command-list">
             <div class="command" v-for="(command, index) of history" :key="index">
                 <span class="prompt" v-if="command.isCommand">{{ prompt }}</span>
@@ -97,6 +99,10 @@ export default {
 
         help: function() {
             this.log(this.command, 'Type auth to authenticate with telegram\nType register <team_name> to register team\nType join <token> to join team\nType leave to leave team');
+        },
+
+        auth: function() {
+            window.TWidgetLogin.auth();
         }
     }
 }
@@ -125,6 +131,10 @@ input, textarea, select {
     max-height: 95vh;
     display: flex;
     flex-direction: column-reverse;
+}
+
+.hide {
+    display: none;
 }
 
 .output {
