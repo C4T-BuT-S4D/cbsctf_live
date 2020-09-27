@@ -186,4 +186,8 @@ input, textarea, select {
 .command {
     color: greenyellow;
 }
+
+.tg {
+    padding-top: 0.4em;
+}
 </style>
