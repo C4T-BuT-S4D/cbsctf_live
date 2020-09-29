@@ -6,6 +6,10 @@ import axios from "axios";
 
 import { regApiURL } from "@/config";
 
+import VueUploadComponent from 'vue-upload-component';
+
+Vue.component('file-upload', VueUploadComponent)
+
 Vue.config.productionTip = false;
 
 axios.defaults.baseURL = regApiURL;

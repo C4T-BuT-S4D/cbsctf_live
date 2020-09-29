@@ -2,13 +2,11 @@
     "name": "front",
     "version": "0.1.0",
     "private": true,
-
     "scripts": {
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build",
         "lint": "vue-cli-service lint"
     },
-
     "dependencies": {
         "axios": "^0.20.0",
         "core-js": "^3.6.5",
@@ -17,9 +15,9 @@
         "vue-property-decorator": "^8.4.2",
         "vue-router": "^3.2.0",
         "vue-telegram-login": "^2.1.0",
+        "vue-upload-component": "^2.8.20",
         "vuex": "^3.4.0"
     },
-
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^2.33.0",
         "@typescript-eslint/parser": "^2.33.0",
@@ -40,13 +38,11 @@
         "typescript": "~3.9.3",
         "vue-template-compiler": "^2.6.11"
     },
-
     "eslintConfig": {
         "root": true,
         "env": {
             "node": true
         },
-
         "extends": [
             "plugin:vue/essential",
             "eslint:recommended",
@@ -54,26 +50,21 @@
             "@vue/prettier",
             "@vue/prettier/@typescript-eslint"
         ],
-
         "parserOptions": {
             "ecmaVersion": 2020
         },
-
         "rules": {
             "@typescript-eslint/camelcase": "off"
         }
     },
-
     "browserslist": [
         "> 1%",
         "last 2 versions",
         "not dead"
     ],
-
     "vue": {
         "publicPath": "/cbsctf_live/"
     },
-
     "prettier": {
         "semi": true,
         "trailingComma": "all",

@@ -16,6 +16,14 @@
                         requestAccess="write"
                     />
                 </div>
+                <form v-else-if="command.isCommand === 'upload_configs'" :action="`${regApiURL}/admin/configs/`" method="post" enctype="multipart/form-data" @submit.prevent="sendConfigFile">
+                    <input type="file" name="dump">
+                    <input type="submit" value="Upload" name="submit" class="upload">
+                </form>
+                <form v-else-if="command.isCommand === 'upload_tokens'" :action="`${regApiURL}/admin/tokens/`" method="post" enctype="multipart/form-data" @submit.prevent="sendTokensFile">
+                    <input type="file" name="tokens">
+                    <input type="submit" value="Upload" name="submit" class="upload">
+                </form>
                 <div class="error" v-else-if="command.isCommand === 'err'">
                     {{ command.command }}
                 </div>
@@ -40,14 +48,17 @@ export default {
 
     data: function() {
         return {
+            regApiURL,
             history: [],
             prompt: '❯',
             command: '',
-            commands: ['help', 'auth', 'solo', 'register', 'show_reg', 'join', 'leave', 'get_status', 'set_status', 'list_reg', 'del_reg'],
+            commands: ['help', 'auth', 'solo', 'register', 'show_reg', 'join', 'leave', 'get_status', 'set_status', 'list_reg', 'del_reg', 'yml', 'upload_config', 'upload_tokens', 'get_password', 'set_password'],
             url: '',
             admin: false,
             suggestHistory: [],
             suggestPtr: -1,
+
+            files: []
         };
     },
 
@@ -152,17 +163,17 @@ export default {
         },
 
         help: function(cmd) {
-            let helpMessage = 'Type <b>auth</b> to authenticate with telegram\nType <b>solo</b> to register as solo player\nType <b>register (team_name)</b> to register team\nType <b>show_reg</b> to show your registration\nType <b>join (token)</b> to join team\nType <b>leave</b> to leave team\n  // If the captain leaves a team, it will be deleted';
+            let helpMessage = 'Type <b>auth</b> to authenticate with telegram\nType <b>solo</b> to register as solo player\nType <b>register (team_name)</b> to register team\nType <b>show_reg</b> to show your registration\nType <b>join (token)</b> to join team\nType <b>leave</b> to leave team\n  // If the captain leaves a team, it will be deleted\nType <b>get_password</b> to get archive password';
 
             if (this.admin) {
-                helpMessage += '\nType <b>get_status</b> to get status\nType <b>set_status (status)</b> to set status\nType <b>list_reg</b> to list registrations\nType <b>del_reg (user_id)</b> to delete registration';
+                helpMessage += '\nType <b>get_status</b> to get status\nType <b>set_status (status)</b> to set status\nType <b>list_reg</b> to list registrations\nType <b>del_reg (user_id)</b> to delete registration\nType <b>yml</b> to get yaml dump\nType <b>upload_config</b> to upload config\nType <b>upload_tokens</b> to upload tokens\nType <b>set_password (password)</b> to set password';
             }
 
             this.log(cmd, helpMessage);
         },
 
-        auth: function() {
-            this.logCommand('auth');
+        auth: function(cmd) {
+            this.logCommand(cmd);
             this.history.unshift({
                 command: 'roflan',
                 isCommand: 'tg'
@@ -185,6 +196,10 @@ export default {
                 const { data: { error } } = e.response;
                 this.logCmdError(cmd, error);
             }
+        },
+
+        solo: function(cmd) {
+            this.log(cmd, 'not implemented');
         },
 
         get_status: async function(cmd) {
@@ -231,7 +246,7 @@ export default {
             }
 
             if (registration.config_exists) {
-                regInfo += `Team VPN config: <a href="${regApiURL}/registrations/config" target="_blank">config</a>\n`;
+                regInfo += `Team VPN config: <a href="${regApiURL}/download/config/?token=${localStorage['access_token']}" target="_blank">config</a>\n`;
             } else {
                 regInfo += 'Team VPN config: unavailable\n';
             }
@@ -246,12 +261,17 @@ export default {
         },
 
         show_reg: async function(cmd) {
-            const { data: registration } = await this.$http.get('/registrations/');
+            try {
+                const { data: registration } = await this.$http.get('/registrations/');
 
-            if (registration === null) {
-                this.logCmdError(cmd, 'not registered');
-            } else {
-                this.log(cmd, this.getTeamInfo(registration));
+                if (registration === null) {
+                    this.logCmdError(cmd, 'not registered');
+                } else {
+                    this.log(cmd, this.getTeamInfo(registration));
+                }
+            } catch (e) {
+                const { data: { error } } = e.response;
+                this.logCmdError(cmd, error);
             }
         },
 
@@ -294,7 +314,105 @@ export default {
                 const { data: { error } } = e.response;
                 this.logCmdError(cmd, error);
             }
-        }
+        },
+
+        yml: async function(cmd) {
+            const { data } = await this.$http.get('/registrations/dump/');
+            this.log(cmd, data);
+        },
+
+        upload_config: function(cmd) {
+            this.logCommand(cmd);
+            this.history.unshift({
+                command: 'roflan',
+                isCommand: 'upload_configs'
+            })
+        },
+
+        upload_tokens: function(cmd) {
+            this.logCommand(cmd);
+            this.history.unshift({
+                command: 'roflan',
+                isCommand: 'upload_tokens'
+            })
+        },
+
+        sendConfigFile: async function(e) {
+            const file = e.target.dump.files[0];
+
+            if (file === undefined) {
+                this.logError('no file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('dump', file);
+
+            try {
+                await this.$http.post('/admin/configs/', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                this.logOutput('OK');
+            } catch (e) {
+                const { data: { error } } = e.response;
+                this.logError(error);
+            }
+        },
+
+        sendTokensFile: async function(e) {
+            const file = e.target.tokens.files[0];
+
+            if (file === undefined) {
+                this.logError('no file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('tokens', file);
+
+            try {
+                await this.$http.post('/admin/tokens/', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                this.logOutput('OK');
+            } catch (e) {
+                const { data: { error } } = e.response;
+                this.logError(error);
+            }
+        },
+
+        get_password: async function(cmd) {
+            const { data: { config_password } } = (await this.$http.get('/state/'));
+            if (config_password === '') {
+                this.log(cmd, 'not available');
+            } else {
+                this.log(cmd, config_password);
+            }
+        },
+
+        set_password: async function(cmd, password) {
+            if (password === undefined) {
+                this.log(cmd, 'Missing argument: password');
+                return;
+            }
+
+            try {
+                await this.$http.post('/admin/config_password/', {
+                    config_password: password,
+                });
+
+                this.log(cmd, 'OK');
+            } catch (e) {
+                const { data: { error } } = e.response;
+                this.logCmdError(cmd, error);
+            }
+        },
     }
 }
 </script>
@@ -317,6 +435,10 @@ input, textarea, select {
 </style>
 
 <style lang="scss" scoped>
+.upload {
+    color: black;
+}
+
 .terminal {
     position: relative;
     overflow-y: hidden;
