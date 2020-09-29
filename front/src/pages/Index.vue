@@ -152,7 +152,7 @@ export default {
 
         enterCommand: function() {
             const argv = this.command.split(' ');
-            const cmdName = argv[0];
+            const cmdName = argv[0].toLowerCase();
             if (!this.commands.includes(cmdName)) {
                 this.log(cmdName, 'Unknown command')
                 this.command = '';
