@@ -205,7 +205,7 @@ export default {
             let helpMessage = userMenu;
 
             if (this.admin) {
-                helpMessage += '\n' + adminMenu;
+                helpMessage += '\n\n' + adminMenu;
             }
 
             this.log(cmd, helpMessage);
