@@ -192,6 +192,19 @@ export default {
                 });
 
                 this.log(cmd, 'OK');
+
+                try {
+                    const { data: registration } = await this.$http.get('/registrations/');
+
+                    if (registration === null) {
+                        this.logCmdError(cmd, 'not registered');
+                    } else {
+                        this.log(cmd, this.getTeamInfo(registration));
+                    }
+                } catch (e) {
+                    const { data: { error } } = e.response;
+                    this.logCmdError(cmd, error);
+                }
             } catch (e) {
                 const { data: { error } } = e.response;
                 this.logCmdError(cmd, error);
