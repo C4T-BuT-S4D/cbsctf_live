@@ -25,7 +25,7 @@
         <div class="command-input">
             <span class="prompt">{{ prompt }}</span>
             <form @submit.prevent="enterCommand" class="user-input-wrapper">
-                <input v-model="command" type="text" class="user-input" ref="input" maxlength="41" placeholder="Type help to get help">
+                <input v-model="command" type="text" class="user-input" ref="input" maxlength="44" placeholder="Type help to get help">
             </form>
         </div>
     </div>
@@ -46,6 +46,8 @@ export default {
             commands: ['help', 'auth', 'solo', 'register', 'show_reg', 'join', 'leave', 'get_status', 'set_status', 'list_reg', 'del_reg'],
             url: '',
             admin: false,
+            suggestHistory: [],
+            suggestPtr: -1,
         };
     },
 
@@ -66,14 +68,41 @@ export default {
 
     methods: {
         keydown: function(e) {
-            if (e.key === "Tab") {
+            if (e.key === "ArrowUp") {
+                e.preventDefault();
+                if (this.suggestPtr > 0) {
+                    this.suggestPtr -= 1;
+                }
+
+                if (this.suggestPtr < this.suggestHistory.length) {
+                    this.command = this.suggestHistory[this.suggestPtr];
+                }
+            } else if (e.key === "ArrowDown") {
+                e.preventDefault();
+                if (this.suggestPtr + 1 < this.suggestHistory.length) {
+                    this.suggestPtr += 1;
+                }
+
+                this.command = this.suggestHistory[this.suggestPtr];
+            } else if (e.key === "Tab") {
                 e.preventDefault();
                 this.autocomplete();
             }
         },
 
         autocomplete: function() {
-            console.log('bruh');
+            let cnt = 0;
+            let mtch = '';
+            for (const cmd of this.commands) {
+                if (cmd.startsWith(this.command)) {
+                    cnt += 1;
+                    mtch = cmd;
+                }
+            }
+
+            if (cnt === 1) {
+                this.command = mtch;
+            }
         },
 
         logCommand: function(text) {
@@ -81,6 +110,9 @@ export default {
                 command: text,
                 isCommand: true,
             });
+
+            this.suggestHistory.push(text);
+            this.suggestPtr = this.suggestHistory.length;
         },
 
         logOutput: function(text) {
