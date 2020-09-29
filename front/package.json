@@ -63,7 +63,7 @@
         "not dead"
     ],
     "vue": {
-        "publicPath": "/cbsctf_live/"
+        "publicPath": "/"
     },
     "prettier": {
         "semi": true,
