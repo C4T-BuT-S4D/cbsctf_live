@@ -199,7 +199,7 @@ export default {
                     if (registration === null) {
                         this.logCmdError(cmd, 'not registered');
                     } else {
-                        this.log(cmd, this.getTeamInfo(registration));
+                        this.logOutput(this.getTeamInfo(registration));
                     }
                 } catch (e) {
                     const { data: { error } } = e.response;
