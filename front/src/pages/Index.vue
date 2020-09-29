@@ -105,7 +105,7 @@ export default {
             let cnt = 0;
             let mtch = '';
             for (const cmd of this.commands) {
-                if (cmd.startsWith(this.command)) {
+                if (cmd.startsWith(this.command.toLowerCase())) {
                     cnt += 1;
                     mtch = cmd;
                 }
