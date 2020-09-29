@@ -60,7 +60,7 @@
 
 <script>
 import { vueTelegramLogin } from 'vue-telegram-login';
-import { regApiURL } from '@/config';
+import { regApiURL, userMenu, adminMenu } from '@/config';
 
 export default {
     components: { vueTelegramLogin },
@@ -142,8 +142,9 @@ export default {
         autocomplete: function () {
             let cnt = 0;
             let mtch = '';
+            const prefix = this.command.toLowerCase();
             for (const cmd of this.commands) {
-                if (cmd.startsWith(this.command.toLowerCase())) {
+                if (cmd.startsWith(prefix)) {
                     cnt += 1;
                     mtch = cmd;
                 }
@@ -201,12 +202,10 @@ export default {
         },
 
         help: function (cmd) {
-            let helpMessage =
-                'Type <b>auth</b> to authenticate with telegram\nType <b>solo</b> to register as solo player\nType <b>register &lt;team_name&gt;</b> to register team\nType <b>show_reg</b> to show your registration\nType <b>join &lt;token&gt;</b> to join team\nType <b>leave</b> to leave team\n  // If the captain leaves a team, it will be deleted\nType <b>get_password</b> to get archive password';
+            let helpMessage = userMenu;
 
             if (this.admin) {
-                helpMessage +=
-                    '\nType <b>get_status</b> to get status\nType <b>set_status &lt;status&gt;</b> to set status\nType <b>list_reg</b> to list registrations\nType <b>del_reg &lt;user_id&gt;</b> to delete registration\nType <b>yml</b> to get yaml dump\nType <b>upload_config</b> to upload config\nType <b>upload_tokens</b> to upload tokens\nType <b>set_password &lt;password&gt;</b> to set password';
+                helpMessage += '\n' + adminMenu;
             }
 
             this.log(cmd, helpMessage);
