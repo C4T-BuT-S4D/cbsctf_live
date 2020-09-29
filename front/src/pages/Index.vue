@@ -5,7 +5,7 @@
                 <span class="prompt" v-if="command.isCommand === true">{{ prompt }}</span>
                 <span class="fake-prompt" v-else></span>
                 <form class="user-input-wrapper" v-if="command.isCommand === true">
-                    <input v-model="history[index].command" type="text" class="user-input" disabled>
+                    <input v-model="history[index].command" type="text" class="user-input" disabled />
                 </form>
                 <div class="tg" v-else-if="command.isCommand === 'tg'">
                     <vue-telegram-login
@@ -16,13 +16,25 @@
                         requestAccess="write"
                     />
                 </div>
-                <form v-else-if="command.isCommand === 'upload_configs'" :action="`${regApiURL}/admin/configs/`" method="post" enctype="multipart/form-data" @submit.prevent="sendConfigFile">
-                    <input type="file" name="dump">
-                    <input type="submit" value="Upload" name="submit" class="upload">
+                <form
+                    v-else-if="command.isCommand === 'upload_configs'"
+                    :action="`${regApiURL}/admin/configs/`"
+                    method="post"
+                    enctype="multipart/form-data"
+                    @submit.prevent="sendConfigFile"
+                >
+                    <input type="file" name="dump" />
+                    <input type="submit" value="Upload" name="submit" class="upload" />
                 </form>
-                <form v-else-if="command.isCommand === 'upload_tokens'" :action="`${regApiURL}/admin/tokens/`" method="post" enctype="multipart/form-data" @submit.prevent="sendTokensFile">
-                    <input type="file" name="tokens">
-                    <input type="submit" value="Upload" name="submit" class="upload">
+                <form
+                    v-else-if="command.isCommand === 'upload_tokens'"
+                    :action="`${regApiURL}/admin/tokens/`"
+                    method="post"
+                    enctype="multipart/form-data"
+                    @submit.prevent="sendTokensFile"
+                >
+                    <input type="file" name="tokens" />
+                    <input type="submit" value="Upload" name="submit" class="upload" />
                 </form>
                 <div class="error" v-else-if="command.isCommand === 'err'">
                     {{ command.command }}
@@ -33,7 +45,14 @@
         <div class="command-input">
             <span class="prompt">{{ prompt }}</span>
             <form @submit.prevent="enterCommand" class="user-input-wrapper">
-                <input v-model="command" type="text" class="user-input" ref="input" maxlength="44" placeholder="Type help to get help">
+                <input
+                    v-model="command"
+                    type="text"
+                    class="user-input"
+                    ref="input"
+                    maxlength="44"
+                    placeholder="Type help to get help"
+                />
             </form>
         </div>
     </div>
@@ -41,45 +60,64 @@
 
 <script>
 import { vueTelegramLogin } from 'vue-telegram-login';
-import { regApiURL } from "@/config";
+import { regApiURL } from '@/config';
 
 export default {
     components: { vueTelegramLogin },
 
-    data: function() {
+    data: function () {
         return {
             regApiURL,
             history: [],
             prompt: '❯',
             command: '',
-            commands: ['help', 'auth', 'solo', 'register', 'show_reg', 'join', 'leave', 'get_status', 'set_status', 'list_reg', 'del_reg', 'yml', 'upload_config', 'upload_tokens', 'get_password', 'set_password'],
+            commands: [
+                'help',
+                'auth',
+                'solo',
+                'register',
+                'show_reg',
+                'join',
+                'leave',
+                'get_status',
+                'set_status',
+                'list_reg',
+                'del_reg',
+                'yml',
+                'upload_config',
+                'upload_tokens',
+                'get_password',
+                'set_password',
+            ],
             url: '',
             admin: false,
             suggestHistory: [],
             suggestPtr: -1,
 
-            files: []
+            files: [],
         };
     },
 
     created: async function () {
         this.url = (window.location.pathname + '/tg').replaceAll('//', '/');
 
-        const { data: { game_role: gameRole } } = (await this.$http.get('/state/'));
+        const {
+            data: { game_role: gameRole },
+        } = await this.$http.get('/state/');
         this.admin = gameRole === 'admin';
     },
 
-    mounted: function() {
+    mounted: function () {
         this.$refs.input.addEventListener('keydown', this.keydown);
     },
 
-    beforeDestroy: function() {
+    beforeDestroy: function () {
         this.$refs.input.removeEventListener('keydown', this.keydown);
     },
 
     methods: {
-        keydown: function(e) {
-            if (e.key === "ArrowUp") {
+        keydown: function (e) {
+            if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 if (this.suggestPtr > 0) {
                     this.suggestPtr -= 1;
@@ -88,20 +126,20 @@ export default {
                 if (this.suggestPtr < this.suggestHistory.length) {
                     this.command = this.suggestHistory[this.suggestPtr];
                 }
-            } else if (e.key === "ArrowDown") {
+            } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 if (this.suggestPtr + 1 < this.suggestHistory.length) {
                     this.suggestPtr += 1;
                 }
 
                 this.command = this.suggestHistory[this.suggestPtr];
-            } else if (e.key === "Tab") {
+            } else if (e.key === 'Tab') {
                 e.preventDefault();
                 this.autocomplete();
             }
         },
 
-        autocomplete: function() {
+        autocomplete: function () {
             let cnt = 0;
             let mtch = '';
             for (const cmd of this.commands) {
@@ -116,7 +154,7 @@ export default {
             }
         },
 
-        logCommand: function(text) {
+        logCommand: function (text) {
             this.history.unshift({
                 command: text,
                 isCommand: true,
@@ -126,35 +164,35 @@ export default {
             this.suggestPtr = this.suggestHistory.length;
         },
 
-        logOutput: function(text) {
+        logOutput: function (text) {
             this.history.unshift({
                 command: text,
                 isCommand: false,
             });
         },
 
-        logError: function(err) {
+        logError: function (err) {
             this.history.unshift({
                 command: err,
-                isCommand: 'err'
-            })
+                isCommand: 'err',
+            });
         },
 
-        log: function(cmd, output) {
+        log: function (cmd, output) {
             this.logCommand(cmd);
             this.logOutput(output);
         },
 
-        logCmdError: function(cmd, err) {
+        logCmdError: function (cmd, err) {
             this.logCommand(cmd);
             this.logError(err);
         },
 
-        enterCommand: function() {
+        enterCommand: function () {
             const argv = this.command.split(' ');
             const cmdName = argv[0].toLowerCase();
             if (!this.commands.includes(cmdName)) {
-                this.log(cmdName, 'Unknown command')
+                this.log(cmdName, 'Unknown command');
                 this.command = '';
             } else {
                 this[cmdName](this.command, ...argv.slice(1));
@@ -162,22 +200,24 @@ export default {
             }
         },
 
-        help: function(cmd) {
-            let helpMessage = 'Type <b>auth</b> to authenticate with telegram\nType <b>solo</b> to register as solo player\nType <b>register &lt;team_name&gt;</b> to register team\nType <b>show_reg</b> to show your registration\nType <b>join &lt;token&gt;</b> to join team\nType <b>leave</b> to leave team\n  // If the captain leaves a team, it will be deleted\nType <b>get_password</b> to get archive password';
+        help: function (cmd) {
+            let helpMessage =
+                'Type <b>auth</b> to authenticate with telegram\nType <b>solo</b> to register as solo player\nType <b>register &lt;team_name&gt;</b> to register team\nType <b>show_reg</b> to show your registration\nType <b>join &lt;token&gt;</b> to join team\nType <b>leave</b> to leave team\n  // If the captain leaves a team, it will be deleted\nType <b>get_password</b> to get archive password';
 
             if (this.admin) {
-                helpMessage += '\nType <b>get_status</b> to get status\nType <b>set_status &lt;status&gt;</b> to set status\nType <b>list_reg</b> to list registrations\nType <b>del_reg &lt;user_id&gt;</b> to delete registration\nType <b>yml</b> to get yaml dump\nType <b>upload_config</b> to upload config\nType <b>upload_tokens</b> to upload tokens\nType <b>set_password &lt;password&gt;</b> to set password';
+                helpMessage +=
+                    '\nType <b>get_status</b> to get status\nType <b>set_status &lt;status&gt;</b> to set status\nType <b>list_reg</b> to list registrations\nType <b>del_reg &lt;user_id&gt;</b> to delete registration\nType <b>yml</b> to get yaml dump\nType <b>upload_config</b> to upload config\nType <b>upload_tokens</b> to upload tokens\nType <b>set_password &lt;password&gt;</b> to set password';
             }
 
             this.log(cmd, helpMessage);
         },
 
-        auth: function(cmd) {
+        auth: function (cmd) {
             this.logCommand(cmd);
             this.history.unshift({
                 command: 'roflan',
-                isCommand: 'tg'
-            })
+                isCommand: 'tg',
+            });
         },
 
         register: async function (cmd, teamName) {
@@ -202,25 +242,31 @@ export default {
                         this.logOutput(this.getTeamInfo(registration));
                     }
                 } catch (e) {
-                    const { data: { error } } = e.response;
+                    const {
+                        data: { error },
+                    } = e.response;
                     this.logCmdError(cmd, error);
                 }
             } catch (e) {
-                const { data: { error } } = e.response;
+                const {
+                    data: { error },
+                } = e.response;
                 this.logCmdError(cmd, error);
             }
         },
 
-        solo: function(cmd) {
+        solo: function (cmd) {
             this.log(cmd, 'not implemented');
         },
 
-        get_status: async function(cmd) {
-            const { data: { status } } = (await this.$http.get('/state/'));
+        get_status: async function (cmd) {
+            const {
+                data: { status },
+            } = await this.$http.get('/state/');
             this.log(cmd, status);
         },
 
-        set_status: async function(cmd, status) {
+        set_status: async function (cmd, status) {
             if (status === undefined) {
                 this.log(cmd, 'Missing argument: status');
                 return;
@@ -233,23 +279,27 @@ export default {
 
                 this.log(cmd, 'OK');
             } catch (e) {
-                const { data: { error } } = e.response;
+                const {
+                    data: { error },
+                } = e.response;
                 this.logCmdError(cmd, error);
             }
         },
 
-        leave: async function(cmd) {
+        leave: async function (cmd) {
             try {
                 await this.$http.delete('/registrations/');
 
                 this.log(cmd, 'OK');
             } catch (e) {
-                const { data: { error } } = e.response;
+                const {
+                    data: { error },
+                } = e.response;
                 this.logCmdError(cmd, error);
             }
         },
 
-        getTeamInfo: function(registration) {
+        getTeamInfo: function (registration) {
             let regInfo = `Team name: ${registration.team_name}\nTeam join token: ${registration.join_token}\n`;
 
             if (registration.team_token === '') {
@@ -273,7 +323,7 @@ export default {
             return regInfo;
         },
 
-        show_reg: async function(cmd) {
+        show_reg: async function (cmd) {
             try {
                 const { data: registration } = await this.$http.get('/registrations/');
 
@@ -283,12 +333,14 @@ export default {
                     this.log(cmd, this.getTeamInfo(registration));
                 }
             } catch (e) {
-                const { data: { error } } = e.response;
+                const {
+                    data: { error },
+                } = e.response;
                 this.logCmdError(cmd, error);
             }
         },
 
-        join: async function(cmd, joinToken) {
+        join: async function (cmd, joinToken) {
             if (joinToken === undefined) {
                 this.log(cmd, 'Missing argument: token');
                 return;
@@ -301,12 +353,14 @@ export default {
 
                 this.log(cmd, 'OK');
             } catch (e) {
-                const { data: { error } } = e.response;
+                const {
+                    data: { error },
+                } = e.response;
                 this.logCmdError(cmd, error);
             }
         },
 
-        list_reg: async function(cmd) {
+        list_reg: async function (cmd) {
             const { data: teams } = await this.$http.get('/registrations/list/');
             let teamInfo = '';
             for (const team of teams) {
@@ -316,7 +370,7 @@ export default {
             this.log(cmd, teamInfo);
         },
 
-        del_reg: async function(cmd, userId) {
+        del_reg: async function (cmd, userId) {
             try {
                 await this.$http.post('/registrations/delete/', {
                     user_id: userId,
@@ -324,33 +378,35 @@ export default {
 
                 this.log(cmd, 'OK');
             } catch (e) {
-                const { data: { error } } = e.response;
+                const {
+                    data: { error },
+                } = e.response;
                 this.logCmdError(cmd, error);
             }
         },
 
-        yml: async function(cmd) {
+        yml: async function (cmd) {
             const { data } = await this.$http.get('/registrations/dump/');
             this.log(cmd, data);
         },
 
-        upload_config: function(cmd) {
+        upload_config: function (cmd) {
             this.logCommand(cmd);
             this.history.unshift({
                 command: 'roflan',
-                isCommand: 'upload_configs'
-            })
+                isCommand: 'upload_configs',
+            });
         },
 
-        upload_tokens: function(cmd) {
+        upload_tokens: function (cmd) {
             this.logCommand(cmd);
             this.history.unshift({
                 command: 'roflan',
-                isCommand: 'upload_tokens'
-            })
+                isCommand: 'upload_tokens',
+            });
         },
 
-        sendConfigFile: async function(e) {
+        sendConfigFile: async function (e) {
             const file = e.target.dump.files[0];
 
             if (file === undefined) {
@@ -364,18 +420,20 @@ export default {
             try {
                 await this.$http.post('/admin/configs/', formData, {
                     headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                        'Content-Type': 'multipart/form-data',
+                    },
                 });
 
                 this.logOutput('OK');
             } catch (e) {
-                const { data: { error } } = e.response;
+                const {
+                    data: { error },
+                } = e.response;
                 this.logError(error);
             }
         },
 
-        sendTokensFile: async function(e) {
+        sendTokensFile: async function (e) {
             const file = e.target.tokens.files[0];
 
             if (file === undefined) {
@@ -389,19 +447,23 @@ export default {
             try {
                 await this.$http.post('/admin/tokens/', formData, {
                     headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                        'Content-Type': 'multipart/form-data',
+                    },
                 });
 
                 this.logOutput('OK');
             } catch (e) {
-                const { data: { error } } = e.response;
+                const {
+                    data: { error },
+                } = e.response;
                 this.logError(error);
             }
         },
 
-        get_password: async function(cmd) {
-            const { data: { config_password } } = (await this.$http.get('/state/'));
+        get_password: async function (cmd) {
+            const {
+                data: { config_password },
+            } = await this.$http.get('/state/');
             if (config_password === '') {
                 this.log(cmd, 'not available');
             } else {
@@ -409,7 +471,7 @@ export default {
             }
         },
 
-        set_password: async function(cmd, password) {
+        set_password: async function (cmd, password) {
             if (password === undefined) {
                 this.log(cmd, 'Missing argument: password');
                 return;
@@ -422,12 +484,14 @@ export default {
 
                 this.log(cmd, 'OK');
             } catch (e) {
-                const { data: { error } } = e.response;
+                const {
+                    data: { error },
+                } = e.response;
                 this.logCmdError(cmd, error);
             }
         },
-    }
-}
+    },
+};
 </script>
 
 <style lang="scss">
@@ -435,13 +499,15 @@ html,
 body {
     width: 100%;
     margin: 0;
-    background-color:black;
+    background-color: black;
     font-family: 'PT Mono', monospace;
     font-size: 1.05em;
 }
 
-input, textarea, select {
-    font-family:inherit;
+input,
+textarea,
+select {
+    font-family: inherit;
     font-size: inherit;
     color: inherit;
 }

@@ -1,6 +1,6 @@
-import Vue from "vue";
-import Vuex from "vuex";
-import axios from "axios";
+import Vue from 'vue';
+import Vuex from 'vuex';
+import axios from 'axios';
 
 Vue.use(Vuex);
 
@@ -23,17 +23,17 @@ export default new Vuex.Store({
     actions: {
         updateRegistration: async function (context) {
             try {
-                const { data } = await axios.get("/registrations/");
-                context.commit("setRegistration", data);
+                const { data } = await axios.get('/registrations/');
+                context.commit('setRegistration', data);
             } catch (e) {
-                context.commit("setRegistration", null);
+                context.commit('setRegistration', null);
             }
         },
 
         updateStatus: async function (context) {
-            const { data } = await axios.get("/status/");
-            console.log("Status response:", data);
-            context.commit("setStatus", data);
+            const { data } = await axios.get('/status/');
+            console.log('Status response:', data);
+            context.commit('setStatus', data);
         },
     },
     getters: {

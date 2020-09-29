@@ -17,7 +17,7 @@ const routes: Array<RouteConfig> = [
         path: '/tg',
         name: 'telegram',
         component: Telegram,
-    }
+    },
 ];
 
 const router = new VueRouter({
