@@ -230,8 +230,6 @@ export default {
                     team_name: teamName,
                 });
 
-                this.log(cmd, 'OK');
-
                 try {
                     const { data: registration } = await this.$http.get('/registrations/');
 
@@ -254,8 +252,30 @@ export default {
             }
         },
 
-        solo: function (cmd) {
-            this.log(cmd, 'not implemented');
+        solo: async function (cmd) {
+            try {
+                await this.$http.post('/registrations/solo/');
+
+                try {
+                    const { data: registration } = await this.$http.get('/registrations/');
+
+                    if (registration === null) {
+                        this.logCmdError(cmd, 'not registered');
+                    } else {
+                        this.logOutput(this.getTeamInfo(registration));
+                    }
+                } catch (e) {
+                    const {
+                        data: { error },
+                    } = e.response;
+                    this.logCmdError(cmd, error);
+                }
+            } catch (e) {
+                const {
+                    data: { error },
+                } = e.response;
+                this.logCmdError(cmd, error);
+            }
         },
 
         get_status: async function (cmd) {
