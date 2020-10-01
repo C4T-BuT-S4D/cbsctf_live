@@ -539,7 +539,8 @@ select {
 }
 
 .command {
-    flex: 0 0 5vh;
+    flex: 0 0 auto;
+    min-height: 5vh;
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
