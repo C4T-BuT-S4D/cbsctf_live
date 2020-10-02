@@ -235,7 +235,7 @@ export default {
                     if (registration === null) {
                         this.logCmdError(cmd, 'not registered');
                     } else {
-                        this.logOutput(this.getTeamInfo(registration));
+                        this.log(cmd, this.getTeamInfo(registration));
                     }
                 } catch (e) {
                     const {
@@ -269,7 +269,7 @@ export default {
                     if (registration === null) {
                         this.logCmdError(cmd, 'not registered');
                     } else {
-                        this.logOutput(this.getTeamInfo(registration));
+                        this.log(cmd, this.getTeamInfo(registration));
                     }
                 } catch (e) {
                     const {
@@ -389,7 +389,7 @@ export default {
             }
 
             if (registration.config_exists) {
-                regInfo += `Team VPN config: <a href="${regApiURL}/download/config/?token=${localStorage['access_token']}" target="_blank">config</a>\n`;
+                regInfo += `Team VPN config: <a href="${regApiURL}/download/config/?token=${localStorage['access_token']}" target="_blank">click me</a>\n`;
             } else {
                 regInfo += 'Team VPN config: unavailable\n';
             }
