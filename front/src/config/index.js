@@ -9,7 +9,8 @@ const userMenu = `Hi! Welcome to CBSCTF registration console! Available commands
 <b>show_reg</b>               show your registration
 <b>join &lt;token&gt;</b>           join team
 <b>leave</b>                  leave the team (if the captain leaves, team is deleted)
-<b>get_password</b>           get archive password`;
+<b>get_password</b>           get archive password
+<b>reboot</b>                 to reboot your machine`;
 
 const adminMenu = `Secret admin menu:
 
@@ -21,6 +22,7 @@ const adminMenu = `Secret admin menu:
 <b>upload_config</b>             upload configs
 <b>upload_tokens</b>             upload tokens
 <b>set_password &lt;password&gt;</b>   share configs password
-`;
+<b>stop_self_hosted</b>          to stop self-hosted machines
+<b>pm &lt;id&gt;</b>                   to pm team`;
 
 export { regApiURL, userMenu, adminMenu };
