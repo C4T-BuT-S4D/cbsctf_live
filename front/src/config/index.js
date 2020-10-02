@@ -3,14 +3,15 @@ const regApiURL = 'https://reg-api.cbsctf.live';
 
 const userMenu = `Hi! Welcome to CBSCTF registration console! Available commands:
 
-<b>auth</b>                   authenticate with telegram
-<b>solo</b>                   register as solo player
-<b>register &lt;team_name&gt;</b>   register a team
-<b>show_reg</b>               show your registration
-<b>join &lt;token&gt;</b>           join team
-<b>leave</b>                  leave the team (if the captain leaves, team is deleted)
-<b>get_password</b>           get archive password
-<b>reboot</b>                 to reboot your machine`;
+<b>auth</b>                      authenticate with telegram
+<b>solo</b>                      register as solo player
+<b>register &lt;team_name&gt;</b>      register a team <b>with cloud vulnbox</b>
+<b>register_sh &lt;team_name&gt;</b>   register a team <b>with self-hosted vulnbox</b>
+<b>show_reg</b>                  show your registration
+<b>join &lt;token&gt;</b>              join team
+<b>leave</b>                     leave the team (if the captain leaves, team is deleted)
+<b>get_password</b>              get archive password
+<b>reboot</b>                    to reboot your machine`;
 
 const adminMenu = `Secret admin menu:
 

@@ -592,7 +592,7 @@ export default {
         sendPMMessage: async function (e, teamId) {
             try {
                 await this.$http.post('/admin/message/', {
-                    form_id: teamId,
+                    form_id: parseInt(teamId),
                     message: e.target.message.value,
                 });
 
