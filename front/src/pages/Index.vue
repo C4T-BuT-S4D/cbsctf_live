@@ -18,9 +18,6 @@
                 </div>
                 <form
                     v-else-if="command.isCommand === 'upload_configs'"
-                    :action="`${regApiURL}/admin/configs/`"
-                    method="post"
-                    enctype="multipart/form-data"
                     @submit.prevent="sendConfigFile"
                 >
                     <input type="file" name="dump" />
@@ -28,13 +25,17 @@
                 </form>
                 <form
                     v-else-if="command.isCommand === 'upload_tokens'"
-                    :action="`${regApiURL}/admin/tokens/`"
-                    method="post"
-                    enctype="multipart/form-data"
                     @submit.prevent="sendTokensFile"
                 >
                     <input type="file" name="tokens" />
                     <input type="submit" value="Upload" name="submit" class="upload" />
+                </form>
+                <form v-else-if="command.isCommand === 'pm_team'" @submit.prevent="e => sendPMMessage(e, command.command)">
+                    <div>
+                        <textarea class="pm-team" name="message">
+                        </textarea>
+                    </div>
+                    <input type="submit" value="Submit" name="submit" class="upload" />
                 </form>
                 <div class="error" v-else-if="command.isCommand === 'err'">
                     {{ command.command }}
@@ -67,7 +68,6 @@ export default {
 
     data: function () {
         return {
-            regApiURL,
             history: [],
             prompt: '❯',
             command: '',
@@ -76,9 +76,12 @@ export default {
                 'auth',
                 'solo',
                 'register',
+                'register_sh',
                 'show_reg',
                 'join',
                 'leave',
+                'reboot',
+
                 'get_status',
                 'set_status',
                 'list_reg',
@@ -88,6 +91,8 @@ export default {
                 'upload_tokens',
                 'get_password',
                 'set_password',
+                'stop_self_hosted',
+                'pm'
             ],
             url: '',
             admin: false,
@@ -202,11 +207,11 @@ export default {
 
         help: function (cmd) {
             let helpMessage =
-                'Type <b>auth</b> to authenticate with telegram\nType <b>solo</b> to register as solo player\nType <b>register &lt;team_name&gt;</b> to register team\nType <b>show_reg</b> to show your registration\nType <b>join &lt;token&gt;</b> to join team\nType <b>leave</b> to leave team\n  // If the captain leaves a team, it will be deleted\nType <b>get_password</b> to get archive password';
+                'Type <b>auth</b> to authenticate with telegram\nType <b>solo</b> to register as solo player\nType <b>register &lt;team_name&gt;</b> to register cloud team\nType <b>register_sh &lt;team_name&gt;</b> to register cloud team\nType <b>show_reg</b> to show your registration\nType <b>join &lt;token&gt;</b> to join team\nType <b>leave</b> to leave team\n  // If the captain leaves a team, it will be deleted\nType <b>get_password</b> to get archive password\nType <b>reboot</b> to reboot your machine';
 
             if (this.admin) {
                 helpMessage +=
-                    '\nType <b>get_status</b> to get status\nType <b>set_status &lt;status&gt;</b> to set status\nType <b>list_reg</b> to list registrations\nType <b>del_reg &lt;user_id&gt;</b> to delete registration\nType <b>yml</b> to get yaml dump\nType <b>upload_config</b> to upload config\nType <b>upload_tokens</b> to upload tokens\nType <b>set_password &lt;password&gt;</b> to set password';
+                    '\nType <b>get_status</b> to get status\nType <b>set_status &lt;status&gt;</b> to set status\nType <b>list_reg</b> to list registrations\nType <b>del_reg &lt;user_id&gt;</b> to delete registration\nType <b>yml</b> to get yaml dump\nType <b>upload_config</b> to upload config\nType <b>upload_tokens</b> to upload tokens\nType <b>set_password &lt;password&gt;</b> to set password\nType <b>stop_self_hosted</b> to stop self-hosted machines\nType <b>pm &lt;id&gt;</b> to pm team';
             }
 
             this.log(cmd, helpMessage);
@@ -253,6 +258,40 @@ export default {
             }
         },
 
+        register_sh: async function (cmd, teamName) {
+            if (teamName === undefined) {
+                this.log(cmd, 'Missing argument: team_name');
+                return;
+            }
+
+            try {
+                await this.$http.post('/registrations/', {
+                    team_name: teamName,
+                    self_hosted: true
+                });
+
+                try {
+                    const { data: registration } = await this.$http.get('/registrations/');
+
+                    if (registration === null) {
+                        this.logCmdError(cmd, 'not registered');
+                    } else {
+                        this.logOutput(this.getTeamInfo(registration));
+                    }
+                } catch (e) {
+                    const {
+                        data: { error },
+                    } = e.response;
+                    this.logCmdError(cmd, error);
+                }
+            } catch (e) {
+                const {
+                    data: { error },
+                } = e.response;
+                this.logCmdError(cmd, error);
+            }
+        },
+
         solo: async function (cmd) {
             try {
                 await this.$http.post('/registrations/solo/');
@@ -263,7 +302,7 @@ export default {
                     if (registration === null) {
                         this.logCmdError(cmd, 'not registered');
                     } else {
-                        this.logOutput(this.getTeamInfo(registration));
+                        this.log(cmd, this.getTeamInfo(registration));
                     }
                 } catch (e) {
                     const {
@@ -319,8 +358,34 @@ export default {
             }
         },
 
+        reboot: async function (cmd) {
+            try {
+                await this.$http.post('/game/reboot/');
+
+                this.log(cmd, 'OK');
+            } catch (e) {
+                const {
+                    data: { error },
+                } = e.response;
+                this.logCmdError(cmd, error);
+            }
+        },
+
+        stop_self_hosted: async function (cmd) {
+            try {
+                await this.$http.post('/admin/stop_self_hosted/');
+
+                this.log(cmd, 'OK');
+            } catch (e) {
+                const {
+                    data: { error },
+                } = e.response;
+                this.logCmdError(cmd, error);
+            }
+        },
+
         getTeamInfo: function (registration) {
-            let regInfo = `Team name: ${registration.team_name}\nTeam join token: ${registration.join_token}\n`;
+            let regInfo = `Team id: ${registration.id}\nTeam name: ${registration.team_name}\nTeam join token: ${registration.join_token}\nSelf-hosted: ${registration.self_hosted ? 'Yes' : 'No'}\n`;
 
             if (registration.team_token === '') {
                 regInfo += 'Flag submission token: unavailable\n';
@@ -391,6 +456,11 @@ export default {
         },
 
         del_reg: async function (cmd, userId) {
+            if (userId === undefined) {
+                this.log(cmd, 'Missing argument: user_id');
+                return;
+            }
+
             try {
                 await this.$http.post('/registrations/delete/', {
                     user_id: userId,
@@ -510,6 +580,35 @@ export default {
                 this.logCmdError(cmd, error);
             }
         },
+
+        pm: function(cmd, teamId) {
+            if (teamId === undefined) {
+                this.log(cmd, 'Missing argument: id');
+                return;
+            }
+
+            this.logCommand(cmd);
+            this.history.unshift({
+                command: teamId,
+                isCommand: 'pm_team',
+            });
+        },
+
+        sendPMMessage: async function(e, teamId) {
+            try {
+                await this.$http.post('/admin/message/', {
+                    form_id: teamId,
+                    message: e.target.message.value
+                });
+
+                this.logOutput('OK');
+            } catch (e) {
+                const {
+                    data: { error },
+                } = e.response;
+                this.logError(error);
+            }
+        }
     },
 };
 </script>
@@ -599,6 +698,7 @@ select {
 }
 
 .output {
+    white-space: pre-wrap;
     color: white;
 }
 
@@ -612,5 +712,9 @@ select {
 
 .tg {
     padding-top: 0.4em;
+}
+
+.pm-team {
+    color: black;
 }
 </style>
