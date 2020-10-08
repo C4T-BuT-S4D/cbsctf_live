@@ -100,7 +100,7 @@ export default {
     },
 
     created: async function () {
-        this.url = (window.location.pathname + '/tg').replaceAll('//', '/');
+        this.url = (window.location.pathname + '/tg').replace(/\/\//, '/');
 
         const {
             data: { game_role: gameRole },
