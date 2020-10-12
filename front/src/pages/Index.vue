@@ -223,6 +223,8 @@ export default {
                 this.log(cmd, 'Missing argument: team_name');
                 return;
             }
+            
+            teamName = Array.prototype.slice.call(arguments, 1).join(' ');
 
             try {
                 await this.$http.post('/registrations/', {
@@ -256,6 +258,8 @@ export default {
                 this.log(cmd, 'Missing argument: team_name');
                 return;
             }
+            
+            teamName = Array.prototype.slice.call(arguments, 1).join(' ');
 
             try {
                 await this.$http.post('/registrations/', {
